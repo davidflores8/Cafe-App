@@ -1,14 +1,59 @@
 import React, { useState, useEffect } from 'react'
+import {doc, setDoc} from 'firebase/firestore'
+import db from "../firebase"
 
 function Register() {
 
-    let [name, setName] = useState("")
-    let [email, setEmail] = useState("")
-    let [date, setDate] = useState("")
-    let [password, setPassword] = useState("")
-    let [password2, setPassword2] = useState("")
+    //const initialValues = {name:" ",email:" ", date:" ", password:" ",password2:" " }
+    const [values,setValues] = useState({})
+    const [formValues, setFormValues] = useState({})
+    const [isSubmit, setIsSubmit]= useState(false)
 
     //Mensaje de comprobacion de contraseñas
+
+    useEffect(() => {
+      if(Object.keys(formValues).length==0 & isSubmit){
+          submitToDataBase()
+      }
+
+    }, [formValues])
+    
+    const submitToDataBase = async () => {
+        await setDoc(doc(db, "Usuarios", values.email), values);
+          console.log("Agregado a la base de datos")
+    }
+    
+    const updateValues = (e)=> {
+        const {name, value} = e.target
+        setValues({...values, [name]: value});
+        
+    }; 
+
+    const handleSubmit = (e)=>{
+        e.preventDefault();
+        setFormValues(validate(values))
+        setIsSubmit(true)
+
+    };
+
+    const validate = (values) =>{
+        let errors ={}
+        if(!values.name){
+            errors.name = "Nombre es requerido"
+        }
+        if(!values.email){
+            errors.email = "Correo es requerido"
+        }
+        if(!values.date){
+            errors.date = "Fecha de nacimiento es requerido"
+        }
+        if(!values.password){
+            errors.password = "Contraseña  es requerido"
+        }
+
+        return errors;
+    };
+
 
 
     return (
@@ -16,27 +61,32 @@ function Register() {
             <form className = "mt-4"> 
                 <div className ="mb-3">
                     <label className = "form-label d-block w-100 mx-auto">Ingrese su nombre: </label>
-                    <input type = "text" onChange = {setName = e => {name = e.target.value } } className="form-control"/>
+                    <input type = "text" name="name" onChange = { updateValues}  className="form-control"/>
+                    <p className="text-danger">{formValues.name}</p>
                 </div>
                 <div className="mb-3">
                     <label className = "form-label">Ingrese su correo electrónico: </label>
-                    <input type = "email" onChange = {setEmail = e => {email = e.target.value } } className="form-control"/>
+                    <input type = "email" name="email" onChange = { updateValues} className="form-control"/>
+                    <p className="text-danger">{formValues.email}</p>
                 </div>
                 <div className="mb-3">
                     <label className = "form-label">Ingrese su fecha de nacimiento: </label>
-                    <input type = "date" onChange = {setDate = e => {date = e.target.value } } className="form-control"/>
+                    <input type = "date" name="date" onChange = { updateValues}  className="form-control"/>
+                    <p className="text-danger">{formValues.date}</p>
                 </div>
                 <div className="mb-3">
                     <label className = "form-label">Ingrese su contraseña: </label>
-                    <input type = "password" onChange = {setPassword = e => {password = e.target.value } }className="form-control"/>
+                    <input type = "password" name="password" onChange = { updateValues} className="form-control"/>
+                    <p className="text-danger">{formValues.password}</p>
                 </div>
                 <div className="mb-3">
                     <label className = "form-label">Ingrese su contraseña nuevamente: </label>
-                    <input type = "password" onChange = {setPassword2 = e => {password2 = e.target.value; passwordsConfiguration();} } className ="form-control"/>
-                    <label className = "form-text"> -- {password2}</label>
+                    <input type = "password" name="passwrd2" onChange = { updateValues} className ="form-control"/>
+                    <p className="text-danger">{formValues.password}</p>
+                    
                 </div>
                 <div className = "container mb-4 mt-5">
-                   <button type="button" className="btn btn-primary d-block mx-auto">
+                   <button type="button" className="btn btn-primary d-block mx-auto" onClick={handleSubmit}>
                        Registrarse
                     </button>
                 </div>
