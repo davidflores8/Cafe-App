@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import {doc, setDoc} from 'firebase/firestore'
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth"
 import db from "../firebase"
+import coffee1 from "../imagenes/coffee3.jpg"
+import { Link } from 'react-router-dom'
 
 function Register() {
 
@@ -8,19 +11,33 @@ function Register() {
     const [values,setValues] = useState({})
     const [formValues, setFormValues] = useState({})
     const [isSubmit, setIsSubmit]= useState(false)
+    let [errorMsg, setErrorMsg] = useState("")
 
     //Mensaje de comprobacion de contraseñas
 
     useEffect(() => {
-      if(Object.keys(formValues).length==0 & isSubmit){
+      if(Object.keys(formValues).length===0 & isSubmit){
           submitToDataBase()
       }
 
-    }, [formValues])
+    }, [formValues, errorMsg])
     
     const submitToDataBase = async () => {
         await setDoc(doc(db, "Usuarios", values.email), values);
           console.log("Agregado a la base de datos")
+        
+          const auth = getAuth();
+        createUserWithEmailAndPassword(auth, values.email, values.password)
+        .then((userCredential) => {
+            let user = userCredential.user
+            console.log(user)
+            console.log("Agregado a la base de datos de autenticacion")
+        }, (error) => {
+            console.log("No se agrego a la base de datos de autenticacion")
+            setErrorMsg(errorMsg = error.message)
+            console.log("Este es el error - ",errorMsg)
+        })
+
     }
     
     const updateValues = (e)=> {
@@ -57,8 +74,11 @@ function Register() {
 
 
     return (
-        <div className = "container-sm border border-2 rounded border-primary mt-4 w-50">
-            <form className = "mt-4"> 
+        <div className = "container w-100 d-flex justify-content-center ">
+            <div className="container w-100 position-absolute ">
+                <img alt=" " className="img-fluid w-100 " src={coffee1}/>
+            </div>
+            <form className = "p-4 position-relative bg-white mt-5 border border-2 rounded border-primary w-50"> 
                 <div className ="mb-3">
                     <label className = "form-label d-block w-100 mx-auto">Ingrese su nombre: </label>
                     <input type = "text" name="name" onChange = { updateValues}  className="form-control"/>
@@ -85,7 +105,9 @@ function Register() {
                     <p className="text-danger">{formValues.password}</p>
                     
                 </div>
-                <div className = "container mb-4 mt-5">
+                <div className = "container mt-1">
+                    <p>¿Ya tienes cuenta? <Link to="/login" > Ingresa aquí </Link> </p>
+                    <p className = "text-danger">{errorMsg}</p>
                    <button type="button" className="btn btn-primary d-block mx-auto" onClick={handleSubmit}>
                        Registrarse
                     </button>
