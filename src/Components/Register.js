@@ -24,14 +24,15 @@ function Register() {
         }
     })
 
-console.log("Esta es la branch de david")
-console.log("Esta es la branch de david")
-console.log("Esta es la branch de david")
-console.log("Esta es la branch de david")
-console.log("Esta es la branch de david")
-console.log("Esta es la branch de david")
-console.log("Esta es la branch de david")
-
+console.log("Esta es la branch de norman")
+console.log("Esta es la branch de norman")
+console.log("Esta es la branch de norman")
+console.log("Esta es la branch de norman")
+console.log("Esta es la branch de norman")
+console.log("Esta es la branch de norman")
+console.log("Esta es la branch de norman")
+console.log("Esta es la branch de norman")
+console.log("Esta es la branch de norman")
 
     return (
         <div className="container w-100 d-flex justify-content-center">
